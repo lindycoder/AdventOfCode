@@ -1,0 +1,8 @@
+{
+  "name": "AdventOfCode",
+  "version": "0.0.0",
+  "devDependencies": {
+    "mocha": "^2.5.3",
+    "chai": "^3.5.0"
+  }
+}
