@@ -47,6 +47,7 @@ class ComputeTest(unittest.TestCase):
         assert_that(result, is_(1514))
 
 if __name__ == '__main__':
+    # noinspection SpellCheckingInspection
     print("Result is {}".format(compute(dedent("""
         hqcfqwydw-fbqijys-whqii-huiuqhsx-660[qhiwf]
         oxjmxdfkd-pzxsbkdbo-erkq-ixyloxqlov-913[xodkb]
