@@ -1,81 +1,24 @@
-import unittest
+function compute2(data){
+    let instructions = parse(data);
+    let cursor = 0;
+    let steps = 0;
 
-import sys
-from textwrap import dedent
-
-import itertools
-from hamcrest import assert_that, is_
-
-def compute(data):
-    instructions = parse(data)
-    cursor = 0
-    steps = 0
-
-    try:
-        while True:
-            jump = instructions[cursor]
-            instructions[cursor] += 1
-            cursor += jump
-            steps += 1
-    except IndexError:
+    while (true) {
+      let jump = instructions[cursor];
+      instructions[cursor] += jump >= 3 ? -1 : 1;
+      cursor += jump;
+      steps += 1;
+      if (typeof(instructions[cursor]) === 'undefined') {
         return steps
+      }
+    }
+}
 
+function parse(data) {
+    return data.split("\n").map((e) => parseInt(e))
+}
 
-def compute2(data):
-    instructions = parse(data)
-    cursor = 0
-    steps = 0
-
-    try:
-        while True:
-            jump = instructions[cursor]
-            instructions[cursor] += -1 if jump >= 3 else 1
-            cursor += jump
-            steps += 1
-    except IndexError:
-        return steps
-
-
-def compute3(data):
-    instructions = parse(data)
-    cursor = 0
-    # steps = 0
-
-    try:
-        for i in itertools.count():
-            jump = instructions[cursor]
-            instructions[cursor] += -1 if jump >= 3 else 1
-            cursor += jump
-    except IndexError:
-        return i
-
-
-def parse(data):
-    return list(int(e) for e in data.split("\n"))
-
-class DayTest(unittest.TestCase):
-    def test_compute(self):
-        input = dedent("""\
-            0
-            3
-            0
-            1
-            -3""")
-        assert_that(compute(input), is_(5))
-
-class Day2Test(unittest.TestCase):
-    def test_compute(self):
-        input = dedent("""\
-            0
-            3
-            0
-            1
-            -3""")
-        assert_that(compute2(input), is_(10))
-
-
-puzzle_input = dedent("""\
-2
+let puzzle_input = `2
 1
 2
 -2
@@ -1148,14 +1091,7 @@ puzzle_input = dedent("""\
 -1019
 -195
 -342
--915""")
+-915`;
 
-if __name__ == '__main__' and len(sys.argv) > 0:
 
-    if sys.argv[1] == "2":
-        result = compute2(puzzle_input)
-        # result = cProfile.run('compute2(puzzle_input)')
-    else:
-        result = compute(puzzle_input)
-
-    print("Result is {}".format(result))
+console.log(compute2(puzzle_input));
