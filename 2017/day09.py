@@ -1,7 +1,7 @@
 import re
+import sys
 import unittest
 
-import sys
 from hamcrest import assert_that, is_
 
 
