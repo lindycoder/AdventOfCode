@@ -13,7 +13,7 @@ def compute(data, list_size=256):
     skip_size = 0
 
     lengths = parse(data)
-    the_list, scrolled, skip_size = knot_hash(the_list, lengths, scrolled, skip_size)
+    the_list, scrolled, skip_size = _hash(the_list, lengths, scrolled, skip_size)
 
     the_list = scroll(list_size - (scrolled % list_size), the_list)
 
@@ -21,24 +21,26 @@ def compute(data, list_size=256):
 
 
 def compute2(data, list_size=256):
+    return knot_hash(data, list_size)
+
+
+def knot_hash(data, list_size=256):
     suffix = [17, 31, 73, 47, 23]
 
     the_list = list(range(0, list_size))
 
-    scrolled = 0
-    skip_size = 0
+    scrolled = skip_size = 0
 
     lengths = parse2(data) + suffix
-
     for _ in range(0, 64):
-        the_list, scrolled, skip_size = knot_hash(the_list, lengths, scrolled, skip_size)
+        the_list, scrolled, skip_size = _hash(the_list, lengths, scrolled, skip_size)
 
     the_list = scroll(list_size - (scrolled % list_size), the_list)
 
     return to_hex(densify(the_list[start:start + 16]) for start in range(0, list_size, 16))
 
 
-def knot_hash(the_list, lengths, scrolled, skip_size):
+def _hash(the_list, lengths, scrolled, skip_size):
     for pinch_size in lengths:
         the_list = list(reversed(the_list[:pinch_size])) + the_list[pinch_size:]
 
