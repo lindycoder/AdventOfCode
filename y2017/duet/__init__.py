@@ -40,6 +40,18 @@ class AddValueTest(BaseInstructionTest):
         assert_that(self.registry["a"], is_(2))
 
 
+class SubValue(Instruction):
+    def __call__(self, registry, target, source):
+        target(target() - source())
+
+
+class SubValueTest(BaseInstructionTest):
+    def test(self):
+        SubValue()(self.registry, Var(self.registry, "a"), Scalar(1))
+        SubValue()(self.registry, Var(self.registry, "a"), Scalar(1))
+        assert_that(self.registry["a"], is_(-2))
+
+
 class MultiplyValue(Instruction):
     def __call__(self, registry, target, source):
         target(target() * source())
@@ -64,22 +76,48 @@ class ModValueTest(BaseInstructionTest):
         assert_that(self.registry["a"], is_(2))
 
 
-class Jump(Instruction):
+class JumpOnPositive(Instruction):
     def __call__(self, registry, source, length):
         if source() > 0:
             return length()
 
 
-class JumpTest(BaseInstructionTest):
+class JumpOnPositiveTest(BaseInstructionTest):
     def test_do(self):
         self.registry["a"] = 5
-        move = Jump()(self.registry, Var(self.registry, "a"), Scalar(3))
+        move = JumpOnPositive()(self.registry, Var(self.registry, "a"), Scalar(3))
 
         assert_that(move, is_(3))
 
     def test_dont(self):
         self.registry["a"] = 0
-        move = Jump()(self.registry, Var(self.registry, "a"), Scalar(3))
+        move = JumpOnPositive()(self.registry, Var(self.registry, "a"), Scalar(3))
+
+        assert_that(move, is_(None))
+
+
+class JumpOnNonZero(Instruction):
+    def __call__(self, registry, source, length):
+        if source() != 0:
+            return length()
+
+
+class JumpOnNonZeroTest(BaseInstructionTest):
+    def test_do(self):
+        self.registry["a"] = 5
+        move = JumpOnNonZero()(self.registry, Var(self.registry, "a"), Scalar(3))
+
+        assert_that(move, is_(3))
+
+    def test_do_negative(self):
+        self.registry["a"] = -5
+        move = JumpOnNonZero()(self.registry, Var(self.registry, "a"), Scalar(3))
+
+        assert_that(move, is_(3))
+
+    def test_dont(self):
+        self.registry["a"] = 0
+        move = JumpOnNonZero()(self.registry, Var(self.registry, "a"), Scalar(3))
 
         assert_that(move, is_(None))
 
@@ -167,6 +205,7 @@ def run_program(registry, data, instructions):
     just_waited = False
     while 0 <= cursor < len(lines):
         instruction, args = lines[cursor]
+        #print("{} - {}".format(instruction, [e() for e in args]))
         try:
             move = instruction(registry, *args)
             just_waited = False
@@ -178,6 +217,7 @@ def run_program(registry, data, instructions):
             yield WAITING
             just_waited = True
 
+        # print(str(registry))
     while True:
         yield DONE
 

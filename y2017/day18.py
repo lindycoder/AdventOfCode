@@ -5,7 +5,7 @@ from textwrap import dedent
 
 from hamcrest import assert_that, is_
 
-from y2017.duet import SetValue, AddValue, MultiplyValue, ModValue, Jump, Send, Receive, run_program, DONE, WAITING, \
+from y2017.duet import SetValue, AddValue, MultiplyValue, ModValue, JumpOnPositive, Send, Receive, run_program, DONE, WAITING, \
     STILL_WAITING
 
 
@@ -30,7 +30,7 @@ def compute(data):
         "mul": MultiplyValue(),
         "mod": ModValue(),
         "rcv": Receive(fake_queue),
-        "jgz": Jump(),
+        "jgz": JumpOnPositive(),
     })
 
     while True:
@@ -52,7 +52,7 @@ def compute2(data):
             "mul": MultiplyValue(),
             "mod": ModValue(),
             "rcv": Receive(program_0_queue),
-            "jgz": Jump(),
+            "jgz": JumpOnPositive(),
         }),
         run_program(defaultdict(lambda: 0, {'p': 1}), data, {
             "snd": Send(program_0_queue),
@@ -61,7 +61,7 @@ def compute2(data):
             "mul": MultiplyValue(),
             "mod": ModValue(),
             "rcv": Receive(program_1_queue),
-            "jgz": Jump(),
+            "jgz": JumpOnPositive(),
         })
     ]
 
