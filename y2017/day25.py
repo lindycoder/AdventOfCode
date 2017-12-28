@@ -7,12 +7,10 @@ from textwrap import dedent
 from hamcrest import assert_that, is_
 
 def run_state_machine(states, start):
-    step = 0
     tape = defaultdict(lambda : 0)
     cursor = 0
     current_state = states[start]
     while True:
-        step += 1
 
         new_val, move, next_state = current_state[tape[cursor]]
 
