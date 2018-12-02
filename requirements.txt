@@ -1,4 +1,0 @@
-pyhamcrest
-nose
-sortedcontainers
-pypaths
