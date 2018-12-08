@@ -1,6 +1,7 @@
-import unittest
-
 import sys
+import unittest
+from textwrap import dedent
+
 from hamcrest import assert_that, is_
 
 
@@ -12,12 +13,19 @@ def compute2(data):
     return 0
 
 
-class DayTest(unittest.TestCase):
-    def test_(self):
-        assert_that(True, is_(False))
+class ProvidedTest(unittest.TestCase):
+    input = dedent("""\
+        """)
+
+    def test_part_1(self):
+        assert_that(compute(self.input), is_(False))
+
+    def test_part_2(self):
+        assert_that(compute2(self.input), is_(False))
 
 
-puzzle_input = ""
+puzzle_input = """\
+"""
 
 if __name__ == '__main__':
     if sys.argv[1] == "2":
