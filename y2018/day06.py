@@ -7,9 +7,11 @@ from textwrap import dedent
 
 from hamcrest import assert_that, is_
 
+from y2018 import Point
+
 
 def compute(data):
-    points = Point.parse_list(data)
+    points = parse_point_list(data)
 
     boundaries = get_boundaries(points)
 
@@ -36,7 +38,7 @@ def compute(data):
 
 
 def compute2(data, max_sum=10000):
-    points = Point.parse_list(data)
+    points = parse_point_list(data)
 
     boundaries = get_boundaries(points)
 
@@ -79,22 +81,12 @@ def sum_all_distances(points, target):
                for point in points)
 
 
-@dataclass(unsafe_hash=True)
-class Point:
-    x: int
-    y: int
+def parse_point_list(data):
+    return [parse_point_line(line) for line in data.split("\n")]
 
-    def manhattan_dist(self, other):
-        return abs(self.x - other.x) + abs(self.y - other.y)
-
-    @staticmethod
-    def parse_list(data):
-        return [Point.parse_line(line) for line in data.split("\n")]
-
-    @staticmethod
-    def parse_line(line):
-        x, y = line.split(", ")
-        return Point(x=int(x), y=int(y))
+def parse_point_line(line):
+    x, y = line.split(", ")
+    return Point(x=int(x), y=int(y))
 
 
 @dataclass
@@ -113,7 +105,7 @@ class PointTest(unittest.TestCase):
         assert_that(Point(1, 1).manhattan_dist(Point(-1, -1)), is_(4))
 
     def test_parse(self):
-        point1, point2 = Point.parse_list("""\
+        point1, point2 = parse_point_list("""\
             1, 1
             800, 900""")
 

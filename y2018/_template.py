@@ -6,11 +6,11 @@ from hamcrest import assert_that, is_
 
 
 def compute(data):
-    return 0
+    return None
 
 
 def compute2(data):
-    return 0
+    return None
 
 
 class ProvidedTest(unittest.TestCase):
