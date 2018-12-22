@@ -1,13 +1,12 @@
 import sys
 import unittest
 from dataclasses import dataclass
-from enum import Enum
 from itertools import groupby, cycle
 from textwrap import dedent
 
 from hamcrest import assert_that, is_
 
-from y2018 import Point
+from y2018 import Point, Directions
 
 
 def compute(data):
@@ -51,13 +50,6 @@ def compute2(data):
 
         if len(carts) == 1:
             return carts[0].position.tuple()
-
-
-class Directions(Enum):
-    LEFT = Point(-1, 0)
-    RIGHT = Point(1, 0)
-    UP = Point(0, -1)
-    DOWN = Point(0, 1)
 
 
 corners = {
