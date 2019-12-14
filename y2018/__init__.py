@@ -34,7 +34,9 @@ class Point:
             _neighbors_cache[self] = [self + n for n in _extended_neighbors]
             return _neighbors_cache[self]
 
-_neighbors_cache=  {}
+
+_neighbors_cache = {}
+
 
 class Directions(Enum):
     LEFT = Point(-1, 0)
