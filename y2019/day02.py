@@ -6,52 +6,16 @@ from typing import List, Callable, Mapping, Tuple
 import pytest
 from hamcrest import assert_that, is_
 
-
-@dataclass
-class Executor(list):
-    state: List[int]
-    _index: int = None
-    _operations: Mapping[int, Tuple[int, Callable]] = None
-
-    def __post_init__(self):
-        self._operations = {
-            1: (3, self.op_add),
-            2: (3, self.op_multiply),
-            99: (0, self.op_end),
-        }
-
-    def __getitem__(self, item):
-        return self.state[item]
-
-    def __setitem__(self, key, value):
-        self.state[key] = value
-
-    def run(self):
-        self._index = 0
-        while self._index < len(self.state):
-            logging.debug(f'i={self._index}; state={self.state}')
-            consume, operation = self._operations[self[self._index]]
-            operation(*(self[self._index + i + 1] for i in range(consume)))
-
-            self._index += consume + 1
-
-    def op_add(self, a, b, t):
-        self[t] = self[a] + self[b]
-
-    def op_multiply(self, a, b, t):
-        self[t] = self[a] * self[b]
-
-    def op_end(self):
-        self._index = len(self.state)
+from y2019.intcode import Intcode
 
 
 def compute(data, noun=12, verb=2):
-    code = list(map(int,  data.strip().split(',')))
+    code = Intcode.from_input(data)
     code[1] = noun
     code[2] = verb
-    ex = Executor(code)
-    ex.run()
-    return ex[0]
+
+    code.run()
+    return code[0]
 
 
 def compute2(data):
@@ -72,7 +36,7 @@ def compute2(data):
     ([1, 1, 1, 4, 99, 5, 6, 0, 99], [30, 1, 1, 4, 2, 5, 6, 0, 99]),
 ])
 def test_v(val, expect):
-    ex = Executor(val)
+    ex = Intcode(val)
     ex.run()
     assert_that(ex.state, is_(expect))
 
