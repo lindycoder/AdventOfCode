@@ -5,14 +5,14 @@ from inspect import signature
 from typing import List, Mapping, Tuple, Callable, Type, Dict
 
 import pytest
-from hamcrest import assert_that, is_
+from hamcrest import assert_that, is_, greater_than
 
 
 @dataclass
 class Parameter:
     @classmethod
     @abstractmethod
-    def from_mode(cls, mode, state, val):
+    def from_mode(cls, mode, state, val, relative_base):
         pass
 
 
@@ -23,10 +23,11 @@ class Reader(Parameter):
         pass
 
     @classmethod
-    def from_mode(cls, mode, state, val):
+    def from_mode(cls, mode, state, val, relative_base):
         return {
             0: PositionalReader(state, val),
             1: ImmediateReader(val),
+            2: PositionalReader(state, relative_base + val),
         }[mode]
 
 
@@ -39,11 +40,14 @@ class Writer(Parameter):
         return self.inv(*args, **kwargs)
 
     @classmethod
-    def from_mode(cls, mode, state, val):
-        def setter(v):
-            state[val] = v
+    def from_mode(cls, mode, state, val, relative_base):
+        return cls({
+            0: WritePositional(state, val),
+            2: WritePositional(state, relative_base + val),
+        }[mode])
 
-        return cls(setter)
+    def __str__(self):
+        return f"Writer using {self.inv}"
 
 @dataclass
 class Intcode:
@@ -51,6 +55,7 @@ class Intcode:
     stdin: List[int] = field(default_factory=list)
     stdout: List[int] = field(default_factory=list)
     _index: int = 0
+    _relative_base: int = 0
     _operations: Dict[int, Tuple[Callable, List[Type['Parameter']]]] = None
     _is_halted: bool = False
 
@@ -74,14 +79,20 @@ class Intcode:
                 )
 
     def __getitem__(self, item):
+        self._adapt_size(item)
         return self.state[item]
 
     def __setitem__(self, key, value):
+        self._adapt_size(key)
         self.state[key] = value
+
+    def _adapt_size(self, index):
+        if index >= len(self.state):
+            self.state += [0 for _ in range(len(self.state), index + 1)]
 
     def run(self):
         try:
-            while self._index < len(self.state):
+            while not self.is_halted:
                 logging.debug(f'i={self._index}; state={self.state}')
                 instruction = self[self._index]
 
@@ -92,8 +103,12 @@ class Intcode:
                     val = self[self._index + i + 1]
                     mode = instruction // (10 ** (2 + i)) % 10
 
-                    args.append(p.from_mode(mode, self.state, val))
+                    args.append(p.from_mode(mode,
+                                            state=self,
+                                            val=val,
+                                            relative_base=self._relative_base))
 
+                logging.debug(f'  {instruction}: {operation.__name__} :: {",".join(map(str, args))}')
                 jump = operation(*args)
                 if jump is not None:
                     self._index = jump
@@ -135,6 +150,9 @@ class Intcode:
     def op_8_equals(self, a: Reader, b: Reader, target: Writer):
         target(1 if a() == b() else 0)
 
+    def op_9_update_relative_base(self, a: Reader):
+        self._relative_base += a()
+
     def op_99_end(self):
         self._is_halted = True
         self._index = len(self.state)
@@ -149,6 +167,9 @@ class PositionalReader(Reader):
     def __call__(self, *args, **kwargs):
         return self.state[self.index]
 
+    def __str__(self):
+        return f"Reader @ position {self.index} ({self.state[self.index]})"
+
 @dataclass
 class ImmediateReader(Reader):
     value: int
@@ -156,6 +177,20 @@ class ImmediateReader(Reader):
     def __call__(self, *args, **kwargs):
         return self.value
 
+    def __str__(self):
+        return f"Reader of {self.value}"
+
+
+@dataclass
+class WritePositional(Callable):
+    state: List[int]
+    index: int
+
+    def __call__(self, value):
+        self.state[self.index] = value
+
+    def __str__(self):
+        return f"Writer @ position {self.index} ({self.state[self.index]})"
 
 
 @pytest.mark.parametrize('val,expect', [
@@ -242,3 +277,25 @@ def test_jump(program, input, output):
     code.stdin.append(input)
     code.run()
     assert_that(code.stdout, is_(output))
+
+
+def test_copy_extra_mem_copy_itself():
+    program = [109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99]
+    code = Intcode(program[:])
+    code.run()
+    assert_that(code.stdout, is_(program))
+
+
+def test_compute_big_digits():
+    program = [1102,34915192,34915192,7,4,7,99,0]
+    code = Intcode(program[:])
+    code.run()
+    assert_that(code.stdout[0], greater_than(10 ** 15))
+
+
+def test_output_big_digits():
+    program = [104,1125899906842624,99]
+    code = Intcode(program[:])
+    code.run()
+    assert_that(code.stdout[0], is_(1125899906842624))
+

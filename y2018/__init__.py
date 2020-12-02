@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 from enum import Enum
 from itertools import groupby
@@ -26,6 +27,24 @@ class Point:
     def direction_to(self, other):
         return Directions(other - self)
 
+    def raytrace(self, target: 'Point'):
+
+        dist_x = target.x - self.x
+        dist_y = target.y - self.y
+
+        if dist_x == 0:
+            step = Point(0, 1 if dist_y > 0 else -1)
+        elif dist_y == 0:
+            step = Point(1 if dist_x > 0 else -1, 0)
+        else:
+            d = math.gcd(dist_x, dist_y)
+            step = Point(dist_x // d, dist_y // d)
+
+        p = Point(self.x, self.y) + step
+        while p != target:
+            yield p
+            p += step
+
     @property
     def extended_neighbors(self):
         try:
@@ -38,12 +57,31 @@ class Point:
 _neighbors_cache = {}
 
 
+class Rotations(Enum):
+    CW = 'CW'
+    CCW = 'CCW'
+
+
 class Directions(Enum):
     LEFT = Point(-1, 0)
     RIGHT = Point(1, 0)
     UP = Point(0, -1)
     DOWN = Point(0, 1)
 
+    def turn(self, direction: Rotations):
+        return _rotations[self, direction]
+
+
+_rotations = {
+    (Directions.UP, Rotations.CW): Directions.RIGHT,
+    (Directions.RIGHT, Rotations.CW): Directions.DOWN,
+    (Directions.DOWN, Rotations.CW): Directions.LEFT,
+    (Directions.LEFT, Rotations.CW): Directions.UP,
+    (Directions.UP, Rotations.CCW): Directions.LEFT,
+    (Directions.LEFT, Rotations.CCW): Directions.DOWN,
+    (Directions.DOWN, Rotations.CCW): Directions.RIGHT,
+    (Directions.RIGHT, Rotations.CCW): Directions.UP,
+}
 
 _extended_neighbors = [
     Directions.UP.value + Directions.LEFT.value,

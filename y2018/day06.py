@@ -1,6 +1,5 @@
 import sys
 import unittest
-from dataclasses import dataclass
 from functools import partial
 from itertools import product, chain
 from textwrap import dedent
@@ -8,6 +7,7 @@ from textwrap import dedent
 from hamcrest import assert_that, is_
 
 from y2018 import Point
+from y2019.rectangle import Rectangle
 
 
 def compute(data):
@@ -87,14 +87,6 @@ def parse_point_list(data):
 def parse_point_line(line):
     x, y = line.split(", ")
     return Point(x=int(x), y=int(y))
-
-
-@dataclass
-class Rectangle:
-    left: int
-    right: int
-    top: int
-    bottom: int
 
 
 class PointTest(unittest.TestCase):
