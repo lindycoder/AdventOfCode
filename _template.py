@@ -13,10 +13,19 @@ def compute2(data):
 
 
 @pytest.mark.parametrize('val,expect', [
-
+    ("""\
+""",)
 ])
-def test_v(val, expect):
-    assert_that(fn(val), is_(expect))
+def test_compute(val, expect):
+    assert_that(compute(val), is_(expect))
+
+
+@pytest.mark.parametrize('val,expect', [
+    ("""\
+""",)
+])
+def test_compute2(val, expect):
+    assert_that(compute2(val), is_(expect))
 
 
 puzzle_input = """\
