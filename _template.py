@@ -14,7 +14,7 @@ def compute2(data):
 
 @pytest.mark.parametrize('val,expect', [
     ("""\
-""",)
+""", 0)
 ])
 def test_compute(val, expect):
     assert_that(compute(val), is_(expect))
@@ -22,7 +22,7 @@ def test_compute(val, expect):
 
 @pytest.mark.parametrize('val,expect', [
     ("""\
-""",)
+""", 0)
 ])
 def test_compute2(val, expect):
     assert_that(compute2(val), is_(expect))
