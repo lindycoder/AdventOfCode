@@ -17,6 +17,7 @@ def parse_input(data):
 
 
 def find_adders(numbers: List[int], target: int) -> Tuple[int, int]:
+    numbers = sorted(numbers)
     low_nums = iter(numbers)
     low = next(low_nums)
     high_nums = iter(reversed(numbers))
