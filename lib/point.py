@@ -3,10 +3,10 @@ from dataclasses import dataclass
 from enum import Enum
 
 import pytest
-from hamcrest import assert_that, is_
+from hamcrest import assert_that, is_, contains_inanyorder
 
 
-@dataclass(unsafe_hash=True)
+@dataclass(frozen=True, unsafe_hash=True)
 class Point:
     x: int
     y: int
@@ -23,6 +23,9 @@ class Point:
     def __lt__(self, other):
         return self.tuple() < other.tuple()
 
+    def __mul__(self, other: int):
+        return Point(self.x * other, self.y * other)
+
     def tuple(self):
         return self.x, self.y
 
@@ -30,6 +33,8 @@ class Point:
         return Directions(other - self)
 
     def raytrace(self, target: 'Point'):
+        if target == self:
+            return
 
         dist_x = target.x - self.x
         dist_y = target.y - self.y
@@ -52,7 +57,7 @@ class Point:
         try:
             return _neighbors_cache[self]
         except KeyError:
-            _neighbors_cache[self] = [self + n for n in _extended_neighbors]
+            _neighbors_cache[self] = [self + n for n in Directions]
             return _neighbors_cache[self]
 
 
@@ -64,11 +69,21 @@ class Rotations(Enum):
     CCW = 'CCW'
 
 
-class Directions(Enum):
+@dataclass(frozen=True, unsafe_hash=True)
+class Directions(Point, Enum):
     LEFT = Point(-1, 0)
     RIGHT = Point(1, 0)
     UP = Point(0, -1)
     DOWN = Point(0, 1)
+
+    UP_LEFT = UP + LEFT
+    UP_RIGHT = UP + RIGHT
+    DOWN_RIGHT = DOWN + RIGHT
+    DOWN_LEFT = DOWN + LEFT
+
+    def __init__(self, point):
+        object.__setattr__(self, "x", point.x)
+        object.__setattr__(self, "y", point.y)
 
     def turn(self, direction: Rotations):
         return _rotations[self, direction]
@@ -85,19 +100,19 @@ _rotations = {
     (Directions.RIGHT, Rotations.CCW): Directions.UP,
 }
 
-_extended_neighbors = [
-    Directions.UP.value + Directions.LEFT.value,
-    Directions.UP.value,
-    Directions.UP.value + Directions.RIGHT.value,
-    Directions.LEFT.value,
-    Directions.RIGHT.value,
-    Directions.DOWN.value + Directions.LEFT.value,
-    Directions.DOWN.value,
-    Directions.DOWN.value + Directions.RIGHT.value,
-]
-
 
 ##### TEST
+
+
+@pytest.mark.parametrize('p,mul,expected', [
+    (Point(0,0), 10, Point(0,0)),
+    (Point(1,1), 10, Point(10,10)),
+    (Point(3,-4), 10, Point(30,-40)),
+    (Point(-4, 1), 0, Point(0, 0)),
+    (Point(-4, 1), 1, Point(-4, 1)),
+])
+def test_mul(p,mul,expected):
+    assert_that(p * mul, is_(expected))
 
 
 def test_direction_to():
@@ -108,7 +123,7 @@ def test_direction_to():
 
 
 def test_extended_neighbors():
-    assert_that(Point(2, 2).extended_neighbors, is_([
+    assert_that(Point(2, 2).extended_neighbors, contains_inanyorder(
         Point(1, 1),
         Point(2, 1),
         Point(3, 1),
@@ -117,10 +132,11 @@ def test_extended_neighbors():
         Point(1, 3),
         Point(2, 3),
         Point(3, 3)
-    ]))
+    ))
 
 
 @pytest.mark.parametrize('p1, p2, steps', [
+    (Point(0, 0), Point(0, 0), []),
     (Point(0, 0), Point(0, 1), []),
     (Point(0, 0), Point(0, 2), [Point(0, 1)]),
     (Point(1, 0), Point(0, 0), []),

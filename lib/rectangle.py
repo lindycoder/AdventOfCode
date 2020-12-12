@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+from itertools import count
 
 import pytest
 from hamcrest import assert_that, is_, has_properties
 
-from y2018 import Point
+from lib.point import Directions, Point
 
 
 @dataclass
@@ -15,7 +16,7 @@ class Rectangle:
 
     @classmethod
     def by_size(cls, width: int, height: int) -> 'Rectangle':
-        return cls(0, width, 0, height)
+        return cls(0, width - 1, 0, height - 1)
 
     # def perimeter(self, start: Point):
     #     if start.x == self.left:
@@ -66,6 +67,12 @@ class Rectangle:
     def height(self):
         return self.bottom - self.top
 
+    def find_edge(self, point: Point, direction: Directions):
+        for i in count(0):
+            check_p = point + direction * i
+            if check_p not in self:
+                return point + direction * (i - 1)
+
     def __contains__(self, item):
         return self.left <= item.x <= self.right and self.top <= item.y <= self.bottom
 
@@ -107,3 +114,22 @@ def test_by_size(val, matches):
 ])
 def test_by_size(val, matches):
     assert_that(val, matches)
+
+@pytest.mark.parametrize('point, direction, expected', [
+    (Point(0, 0), Directions.UP, Point(0, 0)),
+    (Point(0, 0), Directions.UP_RIGHT, Point(0, 0)),
+    (Point(0, 0), Directions.RIGHT, Point(10, 0)),
+    (Point(0, 0), Directions.DOWN_RIGHT, Point(10, 10)),
+    (Point(0, 0), Directions.DOWN, Point(0, 10)),
+    (Point(2, 4), Directions.UP, Point(2, 0)),
+    (Point(2, 4), Directions.UP_RIGHT, Point(6, 0)),
+    (Point(2, 4), Directions.RIGHT, Point(10, 4)),
+    (Point(2, 4), Directions.DOWN_RIGHT, Point(8, 10)),
+    (Point(2, 4), Directions.DOWN, Point(2, 10)),
+    (Point(2, 4), Directions.DOWN_LEFT, Point(0, 6)),
+    (Point(2, 4), Directions.LEFT, Point(0, 4)),
+    (Point(2, 4), Directions.UP_LEFT, Point(0, 2)),
+])
+def test_find_edge(point, direction, expected):
+    r = Rectangle.by_size(10, 10)
+    assert_that(r.find_edge(point, direction), is_(expected))

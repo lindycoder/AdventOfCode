@@ -22,9 +22,16 @@ class Map:
                 if not features or content in features:
                     points[Point(x, y)] = content
 
-
-
         return cls(points, Rectangle.by_size(len(lines[0]), len(lines)))
+
+    def __str__(self):
+        out = f'Map <{self.rect}>\n'
+        lines= []
+        for y in range(self.rect.top, self.rect.bottom + 1):
+            lines.append(''.join(self.features.get(Point(x, y), ' ')
+                           for x in range(self.rect.left, self.rect.right + 1)))
+        return out + '\n'.join(lines)
+
 
 @pytest.mark.parametrize('val, features, expect', [
     ("""\
