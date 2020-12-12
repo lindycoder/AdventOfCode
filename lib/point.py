@@ -1,5 +1,5 @@
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum
 
 import pytest
@@ -64,12 +64,17 @@ class Point:
 _neighbors_cache = {}
 
 
+@dataclass(frozen=True)
 class Rotations(Enum):
-    CW = 'CW'
-    CCW = 'CCW'
+    CW = Point(-1, 1)
+    CCW = Point(1, -1)
+
+    def __init__(self, point):
+        object.__setattr__(self, "x", point.x)
+        object.__setattr__(self, "y", point.y)
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(frozen=True)
 class Directions(Point, Enum):
     LEFT = Point(-1, 0)
     RIGHT = Point(1, 0)
@@ -85,8 +90,16 @@ class Directions(Point, Enum):
         object.__setattr__(self, "x", point.x)
         object.__setattr__(self, "y", point.y)
 
-    def turn(self, direction: Rotations):
-        return _rotations[self, direction]
+    def turn(self, rot: Rotations, times=1):
+        return Directions(rotate(self, rot, times))
+
+
+def rotate(point: Point, rot: Rotations, times=1):
+    """Rotate around a 0, 0 axis"""
+    result = point
+    for _ in range(times):
+        result = Point(x=result.y * rot.x, y=result.x * rot.y)
+    return result
 
 
 _rotations = {
@@ -99,6 +112,13 @@ _rotations = {
     (Directions.DOWN, Rotations.CCW): Directions.RIGHT,
     (Directions.RIGHT, Rotations.CCW): Directions.UP,
 }
+
+
+@dataclass(frozen=True, unsafe_hash=True)
+class PointVector:
+    position: Point
+    velocity: Point
+
 
 
 ##### TEST
@@ -162,3 +182,25 @@ def test_raytrace(p1, p2, steps):
 ])
 def test_directions_turn(direction, rotation, result):
     assert_that(direction.turn(rotation), is_(result))
+
+
+def test_directions_turn_multiple():
+    assert_that(Directions.UP.turn(Rotations.CW, times=2),
+                is_(Directions.DOWN))
+
+
+@pytest.mark.parametrize('point,rotation,result', [
+    (Point(0, 0), Rotations.CW, Point(0, 0)),
+    (Point(0, 0), Rotations.CCW, Point(0, 0)),
+    (Point(1, 1), Rotations.CW, Point(-1, 1)),
+    (Point(1, 1), Rotations.CCW, Point(1, -1)),
+    (Point(10, -4), Rotations.CW, Point(4, 10)),
+    (Point(10, -4), Rotations.CCW, Point(-4, -10)),
+])
+def test_rotate(point, rotation, result):
+    assert_that(rotate(point, rotation), is_(result))
+
+
+def test_rotate_multiple():
+    assert_that(rotate(Point(10, -4), Rotations.CW, times=2),
+                is_(Point(-10, 4)))
