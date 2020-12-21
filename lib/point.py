@@ -80,7 +80,6 @@ class Directions(Point, Enum):
     RIGHT = Point(1, 0)
     UP = Point(0, -1)
     DOWN = Point(0, 1)
-
     UP_LEFT = UP + LEFT
     UP_RIGHT = UP + RIGHT
     DOWN_RIGHT = DOWN + RIGHT
@@ -93,6 +92,9 @@ class Directions(Point, Enum):
     def turn(self, rot: Rotations, times=1):
         return Directions(rotate(self, rot, times))
 
+    @property
+    def opposite(self):
+        return self.turn(Rotations.CW, times=2)
 
 def rotate(point: Point, rot: Rotations, times=1):
     """Rotate around a 0, 0 axis"""
@@ -204,3 +206,18 @@ def test_rotate(point, rotation, result):
 def test_rotate_multiple():
     assert_that(rotate(Point(10, -4), Rotations.CW, times=2),
                 is_(Point(-10, 4)))
+
+
+@pytest.mark.parametrize('direction, result', [
+    (Directions.LEFT, Directions.RIGHT),
+    (Directions.RIGHT, Directions.LEFT),
+    (Directions.UP, Directions.DOWN),
+    (Directions.DOWN, Directions.UP),
+    (Directions.UP_LEFT, Directions.DOWN_RIGHT),
+    (Directions.UP_RIGHT, Directions.DOWN_LEFT),
+    (Directions.DOWN_RIGHT, Directions.UP_LEFT),
+    (Directions.DOWN_LEFT, Directions.UP_RIGHT),
+])
+def test_directions_opposite(direction, result):
+    assert_that(direction.opposite, is_(result))
+
