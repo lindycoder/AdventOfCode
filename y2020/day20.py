@@ -24,7 +24,7 @@ BORDERS = {
 @dataclass(frozen=True)
 class Image:
     number: int
-    borders: Tuple[Tuple[str]]
+    borders: Tuple[str]
     data: Map
 
     @classmethod
