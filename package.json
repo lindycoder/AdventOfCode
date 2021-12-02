@@ -1,8 +1,19 @@
 {
-  "name": "AdventOfCode",
+  "name": "adven-of-code",
   "version": "0.0.0",
+  "dependencies": {
+    "typescript": "^4.5.2"
+  },
   "devDependencies": {
-    "mocha": "^2.5.3",
-    "chai": "^3.5.0"
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-typescript": "^7.16.0",
+    "@types/jest": "^27.0.3",
+    "babel-jest": "^27.4.2",
+    "jest": "^27.4.3",
+    "jest-each": "^27.4.2"
+  },
+  "jest": {
+    "verbose": true
   }
 }
