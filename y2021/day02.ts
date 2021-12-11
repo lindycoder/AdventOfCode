@@ -21,9 +21,7 @@ export function parse(input: string): Step[] {
     })
 }
 
-type Operations = {
-    [key in Direction]: (pos: Pos, amount: number) => Pos;
-};
+type Operations = Record<Direction, (pos: Pos, amount: number) => Pos>
 
 const op: Operations = {
     'forward': (pos, amount) => Object.assign({}, pos, {x: pos.x + amount}),
@@ -45,9 +43,7 @@ export function compute(input: Step[]): string | number {
 }
 
 
-type OperationsAim = {
-    [key in Direction]: (pos: PosAim, amount: number) => PosAim;
-};
+type OperationsAim = Record<Direction, (pos: PosAim, amount: number) => PosAim>
 
 const opAim: OperationsAim = {
     'forward': (pos, amount) => Object.assign({}, pos, {

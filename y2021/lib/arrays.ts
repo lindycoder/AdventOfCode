@@ -15,3 +15,19 @@ export function* zip<T1 extends any[], T2 extends any[]>(arr1: T1, arr2: T2): It
         yield [arr1[i], arr2[i]]
     }
 }
+
+export function transpose<T>(arr: T[][]): T[][] {
+    if (arr.length === 0)
+        return []
+    return arr[0].map((_, col) => arr.map(x => x[col]))
+}
+
+export function distribution(arr: string[]): Record<string, number> {
+    let dist = {};
+    for (const item  of arr) {
+        if (!(item in dist))
+            dist[item] = 0
+        dist[item] += 1 
+    }
+    return dist;
+}

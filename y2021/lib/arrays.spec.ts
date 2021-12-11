@@ -1,4 +1,4 @@
-import { list, zip } from './arrays'
+import { distribution, list, transpose, zip } from './arrays'
 
 describe('list', () => {
     it('should convert an iterator to an array', () => {
@@ -38,7 +38,52 @@ describe('zip', () => {
         ],
     ])('should zip %p, %p', (a, b, matches) => {
         const z = list(zip(a, b))
-        console.log(z)
+        expect(z).toStrictEqual(matches)
+    })
+})
+
+describe('transpose', () => {
+    it.each<[any[][], any[][]]>([
+        [
+            [],
+            []
+        ],
+        [
+            [[1]],
+            [[1]]
+        ],
+        [
+            [
+                [1, 2, 3], 
+                [1, 2, 3], 
+            ],
+            [
+                [1, 1],
+                [2, 2],
+                [3, 3],
+            ]
+        ],
+    ])('should transpose %p to %p', (input, matches) => {
+        const z = transpose(input)
+        expect(z).toStrictEqual(matches)
+    })
+})
+
+describe('distribution', () => {
+    it.each<[string[], Record<string, number>]>([
+        [
+            [],
+            {}
+        ],
+        [
+            ['a', 'b', 'a'],
+            {
+                'a': 2,
+                'b': 1
+            }
+        ],
+    ])('should plot the distribution of %p', (input, matches) => {
+        const z = distribution(input)
         expect(z).toStrictEqual(matches)
     })
 })
