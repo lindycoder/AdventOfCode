@@ -1,4 +1,4 @@
-import { distribution, list, transpose, zip } from './arrays'
+import { distribution, list, sum, transpose, zip } from './arrays'
 
 describe('list', () => {
     it('should convert an iterator to an array', () => {
@@ -85,5 +85,24 @@ describe('distribution', () => {
     ])('should plot the distribution of %p', (input, matches) => {
         const z = distribution(input)
         expect(z).toStrictEqual(matches)
+    })
+})
+
+describe('sum', () => {
+    it.each<[number[], number]>([
+        [
+            [],
+            0
+        ],
+        [
+            [1],
+            1
+        ],
+        [
+            [1, 2, 3],
+            6
+        ],
+    ])('should add all items together: %p', (input, matches) => {
+        expect(sum(input)).toStrictEqual(matches)
     })
 })
