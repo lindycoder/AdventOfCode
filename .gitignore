@@ -1,5 +1,7 @@
 .tox
 *.egg-info
 *.pyc
+*.iml
 node_modules
 .vscode
+target
