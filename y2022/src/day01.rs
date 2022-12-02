@@ -27,8 +27,6 @@ pub fn version2(input: Option<String>)-> String {
     return elves[elves.len()-3..].iter().sum::<u32>().to_string();
 }
 
-// fn compute_elves(data: String) -> Vec<u32>
-
 #[cfg(test)]
 mod tests {
     use crate::day01::{version1, version2};
