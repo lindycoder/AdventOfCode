@@ -1,4 +1,4 @@
-pub fn version1(input: Option<String>)-> String {
+pub fn version1(input: Option<String>) -> String {
     let elves = compute_calories(input);
 
     return elves.iter().max().unwrap().to_string();
@@ -21,10 +21,10 @@ fn compute_calories(input: Option<String>) -> Vec<u32> {
     elves
 }
 
-pub fn version2(input: Option<String>)-> String {
+pub fn version2(input: Option<String>) -> String {
     let mut elves = compute_calories(input);
     elves.sort();
-    return elves[elves.len()-3..].iter().sum::<u32>().to_string();
+    return elves[elves.len() - 3..].iter().sum::<u32>().to_string();
 }
 
 #[cfg(test)]
@@ -73,7 +73,8 @@ mod tests {
 }
 
 pub fn puzzle_input() -> String {
-    return String::from("3120
+    return String::from(
+        "3120
 4127
 1830
 1283
@@ -2309,5 +2310,6 @@ pub fn puzzle_input() -> String {
 8227
 5186
 5159
-1952");
+1952",
+    );
 }
