@@ -1,0 +1,33 @@
+pub fn version1(input: Option<String>) -> String {
+    let data = input.unwrap_or_else(puzzle_input);
+    data
+}
+pub fn version2(input: Option<String>) -> String {
+    let data = input.unwrap_or_else(puzzle_input);
+    data
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::dayXX::{version1, version2};
+
+    #[test]
+    fn example_v1() {
+        let input = "";
+        let result = version1(Some(input.to_string()));
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn example_v2() {
+        let input = "";
+        let result = version2(Some(input.to_string()));
+        assert_eq!(result, "");
+    }
+}
+
+pub fn puzzle_input() -> String {
+    return String::from(
+        "",
+    );
+}

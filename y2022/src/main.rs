@@ -2,6 +2,7 @@ use std::env;
 
 mod day01;
 mod day02;
+mod day03;
 
 fn main() {
     println!("Hello, world2!");
@@ -20,7 +21,9 @@ fn main() {
         "day01.2" => day01::version2,
         "day02.1" => day02::version1,
         "day02.2" => day02::version2,
-        &_ => day02::version2,
+        "day03.1" => day03::version1,
+        "day03.2" => day03::version2,
+        &_ => day03::version2,
     };
 
     let r = target_fn(None);
