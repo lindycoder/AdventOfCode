@@ -27,7 +27,5 @@ mod tests {
 }
 
 pub fn puzzle_input() -> String {
-    return String::from(
-        "",
-    );
+    String::from("")
 }
