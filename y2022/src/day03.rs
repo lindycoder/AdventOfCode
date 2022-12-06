@@ -34,23 +34,22 @@ fn split_to_compartements(line: &str) -> Vec<HashSet<char>> {
 }
 
 fn pick_common(sets: impl IntoIterator<Item = HashSet<char>>) -> char {
-    return sets
+    return *sets
         .into_iter()
         .reduce(|a, b| a.intersection(&b).copied().collect())
         .unwrap()
         .iter()
         .next()
-        .unwrap()
-        .clone();
+        .unwrap();
 }
 
 fn get_score(c: char) -> u32 {
     let ascii = c as u32;
-    return if ascii >= 97 {
+    if ascii >= 97 {
         ascii - 97 + 1 // Lower case start at 1
     } else {
         ascii - 65 + 27 // Upper case start at 27
-    };
+    }
 }
 
 #[cfg(test)]
@@ -152,7 +151,7 @@ CrZsJsPPZsGzwwsLwLmpwMDw";
 }
 
 pub fn puzzle_input() -> String {
-    return String::from(
+    String::from(
         "rNZNWvMZZmDDmwqNdZrWTqhJMhhgzggBhzBJBchQzzJJ
 pHlSVbVbFHgHBzzhQHqg
 nVsqGpbbtDtTNmrmfZ
@@ -453,5 +452,5 @@ cDtfDVNTGGGNNrwLLwHdqLhfLs
 ngghZCChzhNjjNbbJfdh
 slPPRLlBBlVRMvRllLLHvcpcdFfJjvdFpfHfcZ
 RDZPZBLmPVWDVrQtnzSTmgTwmTSg",
-    );
+    )
 }

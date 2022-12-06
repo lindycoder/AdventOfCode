@@ -10,7 +10,7 @@ fn compute_calories(input: Option<String>) -> Vec<u32> {
     let mut elves: Vec<u32> = Vec::new();
     let mut current_elf = Vec::new();
     for line in data.lines() {
-        if line == "" {
+        if line.is_empty() {
             elves.push(current_elf.iter().sum());
             current_elf.clear();
         } else {
@@ -73,7 +73,7 @@ mod tests {
 }
 
 pub fn puzzle_input() -> String {
-    return String::from(
+    String::from(
         "3120
 4127
 1830
@@ -2311,5 +2311,5 @@ pub fn puzzle_input() -> String {
 5186
 5159
 1952",
-    );
+    )
 }

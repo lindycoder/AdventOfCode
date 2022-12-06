@@ -1,62 +1,62 @@
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 enum Sign {
-    ROCK = 1,
-    PAPER = 2,
-    SCISSORS = 3,
+    Rock = 1,
+    Paper = 2,
+    Scissors = 3,
 }
-static SIGNS_ORDER: [Sign; 3] = [Sign::PAPER, Sign::ROCK, Sign::SCISSORS];
+static SIGNS_ORDER: [Sign; 3] = [Sign::Paper, Sign::Rock, Sign::Scissors];
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 enum Outcome {
-    LOSE,
-    DRAW,
-    WIN,
+    Lose,
+    Draw,
+    Win,
 }
 
 pub fn version1(input: Option<String>) -> String {
     let data = input.unwrap_or_else(puzzle_input);
 
-    let games = data.split("\n").map(|e| {
+    let games = data.split('\n').map(|e| {
         (
-            parse(e.chars().nth(0).unwrap()),
+            parse(e.chars().next().unwrap()),
             parse(e.chars().nth(2).unwrap()),
         )
     });
 
-    return games
+    games
         .map(|(opponent, own)| score(opponent, own))
         .sum::<u32>()
-        .to_string();
+        .to_string()
 }
 
 pub fn version2(input: Option<String>) -> String {
     let data = input.unwrap_or_else(puzzle_input);
-    let games = data.split("\n").map(|e| {
+    let games = data.split('\n').map(|e| {
         (
-            parse(e.chars().nth(0).unwrap()),
+            parse(e.chars().next().unwrap()),
             parse_outcome(e.chars().nth(2).unwrap()),
         )
     });
-    return games
+    games
         .map(|(opponent, outcome)| score(opponent, choose_sign(opponent, outcome)))
         .sum::<u32>()
-        .to_string();
+        .to_string()
 }
 
 fn parse(sign: char) -> Sign {
-    return match sign {
-        'A' | 'X' => Sign::ROCK,
-        'B' | 'Y' => Sign::PAPER,
-        _ => Sign::SCISSORS,
-    };
+    match sign {
+        'A' | 'X' => Sign::Rock,
+        'B' | 'Y' => Sign::Paper,
+        _ => Sign::Scissors,
+    }
 }
 
 fn parse_outcome(outcome: char) -> Outcome {
-    return match outcome {
-        'X' => Outcome::LOSE,
-        'Y' => Outcome::DRAW,
-        _ => Outcome::WIN,
-    };
+    match outcome {
+        'X' => Outcome::Lose,
+        'Y' => Outcome::Draw,
+        _ => Outcome::Win,
+    }
 }
 
 fn beats(left: Sign, right: Sign) -> bool {
@@ -72,13 +72,13 @@ fn score(opponent: Sign, own: Sign) -> u32 {
         0
     };
 
-    return base_score + own as u32;
+    base_score + own as u32
 }
 
 fn choose_sign(opponent: Sign, outcome: Outcome) -> Sign {
-    return if outcome == Outcome::DRAW {
+    return if outcome == Outcome::Draw {
         opponent
-    } else if outcome == Outcome::WIN {
+    } else if outcome == Outcome::Win {
         SIGNS_ORDER[(SIGNS_ORDER.iter().position(|e| e == &opponent).unwrap() + 2) % 3]
     } else {
         SIGNS_ORDER[(SIGNS_ORDER.iter().position(|e| e == &opponent).unwrap() + 1) % 3]
@@ -102,55 +102,55 @@ C Z";
 
     #[test]
     fn parsing() {
-        assert_eq!(parse('A'), Sign::ROCK);
-        assert_eq!(parse('X'), Sign::ROCK);
-        assert_eq!(parse('B'), Sign::PAPER);
-        assert_eq!(parse('Y'), Sign::PAPER);
-        assert_eq!(parse('C'), Sign::SCISSORS);
-        assert_eq!(parse('Z'), Sign::SCISSORS);
+        assert_eq!(parse('A'), Sign::Rock);
+        assert_eq!(parse('X'), Sign::Rock);
+        assert_eq!(parse('B'), Sign::Paper);
+        assert_eq!(parse('Y'), Sign::Paper);
+        assert_eq!(parse('C'), Sign::Scissors);
+        assert_eq!(parse('Z'), Sign::Scissors);
     }
 
     #[test]
     fn parsing_outcome() {
-        assert_eq!(parse_outcome('X'), Outcome::LOSE);
-        assert_eq!(parse_outcome('Y'), Outcome::DRAW);
-        assert_eq!(parse_outcome('Z'), Outcome::WIN);
+        assert_eq!(parse_outcome('X'), Outcome::Lose);
+        assert_eq!(parse_outcome('Y'), Outcome::Draw);
+        assert_eq!(parse_outcome('Z'), Outcome::Win);
     }
 
     #[test]
     fn beating() {
-        assert_eq!(beats(Sign::ROCK, Sign::PAPER), false);
-        assert_eq!(beats(Sign::ROCK, Sign::SCISSORS), true);
-        assert_eq!(beats(Sign::PAPER, Sign::ROCK), true);
-        assert_eq!(beats(Sign::PAPER, Sign::SCISSORS), false);
-        assert_eq!(beats(Sign::SCISSORS, Sign::ROCK), false);
-        assert_eq!(beats(Sign::SCISSORS, Sign::PAPER), true);
+        assert_eq!(beats(Sign::Rock, Sign::Paper), false);
+        assert_eq!(beats(Sign::Rock, Sign::Scissors), true);
+        assert_eq!(beats(Sign::Paper, Sign::Rock), true);
+        assert_eq!(beats(Sign::Paper, Sign::Scissors), false);
+        assert_eq!(beats(Sign::Scissors, Sign::Rock), false);
+        assert_eq!(beats(Sign::Scissors, Sign::Paper), true);
     }
 
     #[test]
     fn scoring() {
-        assert_eq!(score(Sign::ROCK, Sign::ROCK), 1 + 3);
-        assert_eq!(score(Sign::ROCK, Sign::PAPER), 2 + 6);
-        assert_eq!(score(Sign::ROCK, Sign::SCISSORS), 3 + 0);
-        assert_eq!(score(Sign::PAPER, Sign::ROCK), 1 + 0);
-        assert_eq!(score(Sign::PAPER, Sign::PAPER), 2 + 3);
-        assert_eq!(score(Sign::PAPER, Sign::SCISSORS), 3 + 6);
-        assert_eq!(score(Sign::SCISSORS, Sign::ROCK), 1 + 6);
-        assert_eq!(score(Sign::SCISSORS, Sign::PAPER), 2 + 0);
-        assert_eq!(score(Sign::SCISSORS, Sign::SCISSORS), 3 + 3);
+        assert_eq!(score(Sign::Rock, Sign::Rock), 1 + 3);
+        assert_eq!(score(Sign::Rock, Sign::Paper), 2 + 6);
+        assert_eq!(score(Sign::Rock, Sign::Scissors), 3 + 0);
+        assert_eq!(score(Sign::Paper, Sign::Rock), 1 + 0);
+        assert_eq!(score(Sign::Paper, Sign::Paper), 2 + 3);
+        assert_eq!(score(Sign::Paper, Sign::Scissors), 3 + 6);
+        assert_eq!(score(Sign::Scissors, Sign::Rock), 1 + 6);
+        assert_eq!(score(Sign::Scissors, Sign::Paper), 2 + 0);
+        assert_eq!(score(Sign::Scissors, Sign::Scissors), 3 + 3);
     }
 
     #[test]
     fn choosing() {
-        assert_eq!(choose_sign(Sign::ROCK, Outcome::LOSE), Sign::SCISSORS);
-        assert_eq!(choose_sign(Sign::ROCK, Outcome::DRAW), Sign::ROCK);
-        assert_eq!(choose_sign(Sign::ROCK, Outcome::WIN), Sign::PAPER);
-        assert_eq!(choose_sign(Sign::PAPER, Outcome::LOSE), Sign::ROCK);
-        assert_eq!(choose_sign(Sign::PAPER, Outcome::DRAW), Sign::PAPER);
-        assert_eq!(choose_sign(Sign::PAPER, Outcome::WIN), Sign::SCISSORS);
-        assert_eq!(choose_sign(Sign::SCISSORS, Outcome::LOSE), Sign::PAPER);
-        assert_eq!(choose_sign(Sign::SCISSORS, Outcome::DRAW), Sign::SCISSORS);
-        assert_eq!(choose_sign(Sign::SCISSORS, Outcome::WIN), Sign::ROCK);
+        assert_eq!(choose_sign(Sign::Rock, Outcome::Lose), Sign::Scissors);
+        assert_eq!(choose_sign(Sign::Rock, Outcome::Draw), Sign::Rock);
+        assert_eq!(choose_sign(Sign::Rock, Outcome::Win), Sign::Paper);
+        assert_eq!(choose_sign(Sign::Paper, Outcome::Lose), Sign::Rock);
+        assert_eq!(choose_sign(Sign::Paper, Outcome::Draw), Sign::Paper);
+        assert_eq!(choose_sign(Sign::Paper, Outcome::Win), Sign::Scissors);
+        assert_eq!(choose_sign(Sign::Scissors, Outcome::Lose), Sign::Paper);
+        assert_eq!(choose_sign(Sign::Scissors, Outcome::Draw), Sign::Scissors);
+        assert_eq!(choose_sign(Sign::Scissors, Outcome::Win), Sign::Rock);
     }
 
     #[test]
@@ -164,7 +164,7 @@ C Z";
 }
 
 pub fn puzzle_input() -> String {
-    return String::from(
+    String::from(
         "B Y
 A Z
 A Z
@@ -2665,5 +2665,5 @@ B X
 B Z
 B Y
 A Z",
-    );
+    )
 }

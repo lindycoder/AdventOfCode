@@ -1,18 +1,20 @@
+extern crate core;
+
 use std::env;
 
 mod day01;
 mod day02;
 mod day03;
+mod day04;
 
 fn main() {
     println!("Hello, world2!");
     let args: Vec<String> = env::args().collect();
-    let target: &str;
-    if args.len() >= 2 {
-        target = &args[1];
+    let target = if args.len() >= 2 {
+        &args[1]
     } else {
-        target = "no target";
-    }
+        "no target"
+    };
 
     println!("Running {target}");
 
@@ -23,7 +25,9 @@ fn main() {
         "day02.2" => day02::version2,
         "day03.1" => day03::version1,
         "day03.2" => day03::version2,
-        &_ => day03::version2,
+        "day04.1" => day04::version1,
+        "day04.2" => day04::version2,
+        &_ => day04::version2,
     };
 
     let r = target_fn(None);
