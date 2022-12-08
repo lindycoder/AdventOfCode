@@ -1,5 +1,3 @@
-extern crate core;
-
 use std::env;
 
 mod day01;
@@ -8,6 +6,7 @@ mod day03;
 mod day04;
 mod day05;
 mod day06;
+mod day07;
 
 fn main() {
     println!("Hello, world2!");
@@ -33,7 +32,9 @@ fn main() {
         "day05.2" => day05::version2,
         "day06.1" => day06::version1,
         "day06.2" => day06::version2,
-        &_ => day06::version2,
+        "day07.1" => day07::version1,
+        "day07.2" => day07::version2,
+        &_ => day07::version2,
     };
 
     let r = target_fn(None);
