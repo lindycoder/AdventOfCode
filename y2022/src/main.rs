@@ -7,6 +7,7 @@ mod day04;
 mod day05;
 mod day06;
 mod day07;
+mod day08;
 
 fn main() {
     println!("Hello, world2!");
@@ -34,7 +35,9 @@ fn main() {
         "day06.2" => day06::version2,
         "day07.1" => day07::version1,
         "day07.2" => day07::version2,
-        &_ => day07::version2,
+        "day08.1" => day08::version1,
+        "day08.2" => day08::version2,
+        &_ => day08::version2,
     };
 
     let r = target_fn(None);
