@@ -6,7 +6,7 @@ import pytest
 from hamcrest import assert_that, is_, contains_inanyorder
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(frozen=True)
 class Point:
     x: int
     y: int
@@ -74,8 +74,8 @@ class Rotations(Enum):
         object.__setattr__(self, "y", point.y)
 
 
-@dataclass(frozen=True)
-class Directions(Point, Enum):
+# @dataclass(frozen=True)
+class Directions(Enum):
     LEFT = Point(-1, 0)
     RIGHT = Point(1, 0)
     UP = Point(0, -1)
@@ -85,9 +85,9 @@ class Directions(Point, Enum):
     DOWN_RIGHT = DOWN + RIGHT
     DOWN_LEFT = DOWN + LEFT
 
-    def __init__(self, point):
-        object.__setattr__(self, "x", point.x)
-        object.__setattr__(self, "y", point.y)
+    # def __init__(self, point):
+    #     object.__setattr__(self, "x", point.x)
+    #     object.__setattr__(self, "y", point.y)
 
     def turn(self, rot: Rotations, times=1):
         return Directions(rotate(self, rot, times))
@@ -220,4 +220,3 @@ def test_rotate_multiple():
 ])
 def test_directions_opposite(direction, result):
     assert_that(direction.opposite, is_(result))
-

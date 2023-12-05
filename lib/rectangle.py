@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from itertools import count
+from typing import Self
 
 import pytest
 from hamcrest import assert_that, is_, has_properties
@@ -7,7 +8,7 @@ from hamcrest import assert_that, is_, has_properties
 from lib.point import Directions, Point
 
 
-@dataclass
+@dataclass(frozen=True)
 class Rectangle:
     left: int
     right: int
@@ -76,6 +77,9 @@ class Rectangle:
     def __contains__(self, item):
         return self.left <= item.x <= self.right and self.top <= item.y <= self.bottom
 
+    def expand(self) -> "Rectangle":
+        return Rectangle(self.left-1, self.right+1, self.top-1,self.bottom+1)
+
 
 # @pytest.mark.parametrize('rect,start,points', [
 #     (Rectangle(0, 1, 0, 1), Point(0, 0),
@@ -133,3 +137,9 @@ def test_by_size(val, matches):
 def test_find_edge(point, direction, expected):
     r = Rectangle.by_size(10, 10)
     assert_that(r.find_edge(point, direction), is_(expected))
+
+
+def test_expand():
+    initial = Rectangle(0, 1, 0, 1)
+
+    assert_that(initial.expand(), is_(Rectangle(-1, 2, -1, 2)))
