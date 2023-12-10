@@ -19,7 +19,7 @@ def compute2(data: str) -> int | str:
 
 
 @pytest.mark.parametrize(
-    ("val", "expect"),
+    ("val", "expected"),
     [
         (
             dedent(
@@ -30,12 +30,12 @@ def compute2(data: str) -> int | str:
         ),
     ],
 )
-def test_compute(val: str, expect: int | str):
-    assert_that(compute(val), is_(expect))
+def test_compute(val: str, expected: int | str):
+    assert_that(compute(val), is_(expected))
 
 
 @pytest.mark.parametrize(
-    ("val", "expect"),
+    ("val", "expected"),
     [
         (
             dedent(
@@ -46,8 +46,8 @@ def test_compute(val: str, expect: int | str):
         )
     ],
 )
-def test_compute2(val: str, expect: int | str):
-    assert_that(compute2(val), is_(expect))
+def test_compute2(val: str, expected: int | str):
+    assert_that(compute2(val), is_(expected))
 
 
 if __name__ == "__main__":
