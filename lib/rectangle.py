@@ -16,7 +16,7 @@ class Rectangle:
     bottom: int
 
     @classmethod
-    def by_size(cls, width: int, height: int) -> 'Rectangle':
+    def by_size(cls, width: int, height: int) -> Self:
         return cls(0, width - 1, 0, height - 1)
 
     # def perimeter(self, start: Point):

@@ -1,9 +1,10 @@
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from textwrap import dedent
-from typing import Any, Container, Dict, List, Optional
+from typing import Any, Container, Dict, Optional, Self
 
 import pytest
-from hamcrest import has_entries, assert_that, is_, all_of, has_properties
+from hamcrest import has_entries, assert_that, has_properties
 
 from lib.point import Point
 from lib.rectangle import Rectangle
@@ -11,11 +12,11 @@ from lib.rectangle import Rectangle
 
 @dataclass(frozen=True)
 class Map:
-    features: Dict[Point, Any]
+    features: Mapping[Point, str]
     rect: Rectangle
 
     @classmethod
-    def from_input(cls, data: str, features: Container[str]) -> "Map":
+    def from_input(cls, data: str, features: Container[str]) -> Self:
         points = {}
         lines = data.splitlines()
         for y, line in enumerate(lines):
@@ -37,37 +38,42 @@ class Map:
             )
         return out + "\n".join(lines)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Point) -> str:
         return self.features.__getitem__(item)
 
-    def get(self, p: Point, default: Optional[Any] = None):
+    def items(self) -> Iterable[tuple[Point, str]]:
+        return self.features.items()
+
+    def get(self, p: Point, default: Optional[str] = None) -> str:
         return self.features.get(p, default)
 
     @property
     def top_right(self):
-        return Point(self.rect.right, self.rect.top)
+        return self.rect.top_right
 
     @property
     def top_left(self):
-        return Point(self.rect.left, self.rect.top)
+        return self.rect.top_left
 
     @property
     def bottom_right(self):
-        return Point(self.rect.right, self.rect.bottom)
+        return self.rect.bottom_right
 
     @property
     def bottom_left(self):
-        return Point(self.rect.left, self.rect.bottom)
+        return self.rect.bottom_left
 
 
 @pytest.mark.parametrize(
     "val, features, expect",
     [
         (
-            """\
-.#.
-#.#
-""",
+            dedent(
+                """\
+                .#.
+                #.#
+                """
+            ),
             None,
             has_properties(
                 features=has_entries(
@@ -85,16 +91,18 @@ class Map:
                     "#",
                 ),
                 rect=has_properties(
-                    width=3,
-                    height=2,
+                    width=2,
+                    height=1,
                 ),
             ),
         ),
         (
-            """\
-.#.
-#.#
-""",
+            dedent(
+                """\
+                .#.
+                #.#
+                """
+            ),
             ("#,"),
             has_properties(
                 features=has_entries(
@@ -126,9 +134,10 @@ def test_map_locations(prop, matches):
     map = Map.from_input(
         dedent(
             """\
-                                ...
-                                .#.
-                                ..."""
+            ...
+            .#.
+            ...
+            """
         ),
         features=("#",),
     )

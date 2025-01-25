@@ -53,6 +53,12 @@ class Point:
             p += step
 
     @property
+    def neighbors(self):
+        yield from (
+            self + d for d in _NEIGHBORS
+        )
+
+    @property
     def extended_neighbors(self):
         try:
             return _neighbors_cache[self]
@@ -74,16 +80,19 @@ class Rotations(Enum):
         object.__setattr__(self, "y", point.y)
 
 
-# @dataclass(frozen=True)
-class Directions(Enum):
-    LEFT = Point(-1, 0)
-    RIGHT = Point(1, 0)
-    UP = Point(0, -1)
-    DOWN = Point(0, 1)
-    UP_LEFT = UP + LEFT
-    UP_RIGHT = UP + RIGHT
-    DOWN_RIGHT = DOWN + RIGHT
-    DOWN_LEFT = DOWN + LEFT
+class PointEnum(Point, Enum):
+    """Point enum."""
+
+
+class Directions(PointEnum):
+    LEFT = (-1, 0)
+    RIGHT = (1, 0)
+    UP = (0, -1)
+    DOWN = (0, 1)
+    UP_LEFT = (-1, -1)
+    UP_RIGHT = (1, -1)
+    DOWN_RIGHT = (1, 1)
+    DOWN_LEFT = (-1, 1)
 
     # def __init__(self, point):
     #     object.__setattr__(self, "x", point.x)
@@ -96,6 +105,12 @@ class Directions(Enum):
     def opposite(self):
         return self.turn(Rotations.CW, times=2)
 
+_NEIGHBORS = (
+    Directions.LEFT,
+    Directions.RIGHT,
+    Directions.UP,
+    Directions.DOWN,
+)
 def rotate(point: Point, rot: Rotations, times=1):
     """Rotate around a 0, 0 axis"""
     result = point
@@ -142,6 +157,16 @@ def test_direction_to():
     assert_that(Point(2, 2).direction_to(Point(3, 2)), is_(Directions.RIGHT))
     assert_that(Point(2, 2).direction_to(Point(1, 2)), is_(Directions.LEFT))
     assert_that(Point(2, 2).direction_to(Point(2, 3)), is_(Directions.DOWN))
+
+
+def test_neighbors():
+    assert_that(Point(2, 2).neighbors, contains_inanyorder(
+        Point(2, 1),
+        Point(3, 2),
+        Point(2, 3),
+        Point(1, 2),
+    ))
+
 
 
 def test_extended_neighbors():
